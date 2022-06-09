@@ -1,4 +1,3 @@
-from operator import pos
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats
 
@@ -98,4 +97,4 @@ def compare_players(id1, id2):
 
     return stats
 
-print(compare_players(find_player_by_name('LeBron James'), find_player_by_name('Michael Jordan')))
+#print(compare_players(find_player_by_name('LeBron James'), find_player_by_name('Michael Jordan')))
