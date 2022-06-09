@@ -1,6 +1,7 @@
 import logging
 from aiogram import Bot, Dispatcher, types, executor
 from config import TOKEN
+from nba_api.stats.static import players
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
