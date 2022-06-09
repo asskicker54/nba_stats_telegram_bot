@@ -25,7 +25,7 @@ def get_player_stats(id):
     rs = player_info.career_totals_regular_season.get_dict()['data']
     ps = player_info.career_totals_post_season.get_dict()['data']
     
-    stats = {
+    stats_total = {
         'post_season': { 
             'G'   : ps[0][stats_idx['G']],
             'PTS' : ps[0][stats_idx['PTS']],
@@ -47,6 +47,55 @@ def get_player_stats(id):
         }
 
     }
+
+    stats_avg = {
+        'post_season': { 
+            'PTS' : round(stats_total['post_season']['PTS'] / stats_total['post_season']['G'], 2),
+            'AST' : round(stats_total['post_season']['AST'] / stats_total['post_season']['G'], 2),
+            'REB' : round(stats_total['post_season']['REB'] / stats_total['post_season']['G'], 2),
+            'BLK' : round(stats_total['post_season']['BLK'] / stats_total['post_season']['G'], 2),
+            'STL' : round(stats_total['post_season']['STL'] / stats_total['post_season']['G'], 2),
+            'TOV' : round(stats_total['post_season']['TOV'] / stats_total['post_season']['G'], 2)
+        }, 
+
+        'reg_season': {
+            'PTS' : round(stats_total['reg_season']['PTS'] / stats_total['reg_season']['G'], 2),
+            'AST' : round(stats_total['reg_season']['AST'] / stats_total['reg_season']['G'], 2),
+            'REB' : round(stats_total['reg_season']['REB'] / stats_total['reg_season']['G'], 2),
+            'BLK' : round(stats_total['reg_season']['BLK'] / stats_total['reg_season']['G'], 2),
+            'STL' : round(stats_total['reg_season']['STL'] / stats_total['reg_season']['G'], 2),
+            'TOV' : round(stats_total['reg_season']['TOV'] / stats_total['reg_season']['G'], 2)
+        }
+
+    }
+
+    return stats_total, stats_avg
+
+def compare_players(id1, id2):
+    p1_stats = get_player_stats(id1)[1]
+    p2_stats = get_player_stats(id2)[1]
+
+    stats = {
+        'post_season': {
+            'PTS' : round(p1_stats['post_season']['PTS'] - p2_stats['post_season']['PTS'], 2),
+            'AST' : round(p1_stats['post_season']['REB'] - p2_stats['post_season']['REB'], 2),
+            'REB' : round(p1_stats['post_season']['AST'] - p2_stats['post_season']['AST'], 2),
+            'BLK' : round(p1_stats['post_season']['BLK'] - p2_stats['post_season']['BLK'], 2),
+            'STL' : round(p1_stats['post_season']['STL'] - p2_stats['post_season']['STL'], 2),
+            'TOV' : round(p1_stats['post_season']['TOV'] - p2_stats['post_season']['TOV'], 2) * -1
+        }, 
+
+        'reg_season' : {
+            'PTS' : round(p1_stats['reg_season']['PTS'] - p2_stats['reg_season']['PTS'], 2),
+            'AST' : round(p1_stats['reg_season']['AST'] - p2_stats['reg_season']['AST'], 2),
+            'REB' : round(p1_stats['reg_season']['REB'] - p2_stats['reg_season']['REB'], 2),
+            'BLK' : round(p1_stats['reg_season']['BLK'] - p2_stats['reg_season']['BLK'], 2),
+            'STL' : round(p1_stats['reg_season']['STL'] - p2_stats['reg_season']['STL'], 2),
+            'TOV' : round(p1_stats['reg_season']['TOV'] - p2_stats['reg_season']['TOV'], 2) * -1
+        }
+
+    }
+
     return stats
 
-#print(get_player_stats(find_player_by_name("Michael jordan")))
+print(compare_players(find_player_by_name('LeBron James'), find_player_by_name('Michael Jordan')))
