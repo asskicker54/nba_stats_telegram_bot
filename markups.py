@@ -9,7 +9,7 @@ main_menu = ReplyKeyboardMarkup(resize_keyboard=True).add(search_btn)
 # ---After Found Menu---
 stat_btn = KeyboardButton('Статистика')
 comp_btn = KeyboardButton('Сравнить с другим игроком')
-af_menu = ReplyKeyboardMarkup(resize_keyboard=True).add(stat_btn, comp_btn)
+af_menu = ReplyKeyboardMarkup(resize_keyboard=True).add(stat_btn, comp_btn, btn_back_main)
 
 # ---Statistics Menu---
 pss_total_btn = KeyboardButton('Play-off stats total')

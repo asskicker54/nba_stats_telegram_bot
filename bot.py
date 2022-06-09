@@ -15,8 +15,6 @@ dp.middleware.setup(LoggingMiddleware())
 
 class UserState(StatesGroup):
     main_player = State()
-    info_choice = State()
-    stat_choice = State()
     player2 = State()
 
 @dp.message_handler(commands=['start'])
@@ -31,14 +29,48 @@ async def bot_message(message: types.Message):
 
 @dp.message_handler(state=UserState.main_player)
 async def get_player_name(message: types.Message, state: FSMContext):
-    await state.update_data(main_player=message.text)
-    await state.reset_state(with_data=False)
-    await bot.send_message(message.from_user.id, 'Выберите раздел информации об игроке', reply_markup=nav.af_menu)
-    #await UserState.info_choice.set()
+        await state.update_data(main_player=message.text)
+        await state.reset_state(with_data=False)
+        await bot.send_message(message.from_user.id, 'Выберите раздел информации об игроке', reply_markup=nav.af_menu)
 
-@dp.message_handler(Text(equals='Статистика')) #(state=UserState.info_choice)
-async def info_menu(message: types.Message): #state: FSMContext):
-    await bot.send_message(message.from_user.id, 'Выберите', reply_markup=nav.stat_menu)
+@dp.message_handler(Text(equals='Статистика'))
+async def info_menu(message: types.Message): 
+    await bot.send_message(message.from_user.id, 'Выберите тип статистики', reply_markup=nav.stat_menu)
+
+@dp.message_handler(Text(equals='Сравнить с другим игроком'))
+async def get_compare_player_name(message: types.Message):
+    await message.reply('Введите имя игрока для сравнения')
+    await UserState.player2.set()
+
+@dp.message_handler(Text(equals='Начать заново'))
+async def go_back(message: types.Message):
+    await bot.send_message(message.from_user.id,'Меню', reply_markup=nav.main_menu)
+    
+
+@dp.message_handler(state=UserState.player2)
+async def compare_players(message: types.Message, state: FSMContext):
+    await state.update_data(player2=message.text)
+    await state.reset_state(with_data=False)
+    data = await state.get_data()
+    p1 = get_player_stats(find_player_by_name(data['main_player']))[1]
+    p2 = get_player_stats(find_player_by_name(data['player2']))[1]
+    
+    await bot.send_message(message.from_user.id, f"PLAY-OFFS AVG:\n"
+        f"\n•PTS: {round(p1['post_season']['PTS'] - p2['post_season']['PTS'], 2)}"
+        f"\n•AST: {round(p1['post_season']['AST'] - p2['post_season']['AST'], 2)}"
+        f"\n•REB: {round(p1['post_season']['REB'] - p2['post_season']['REB'], 2)}"
+        f"\n•BLK: {round(p1['post_season']['BLK'] - p2['post_season']['BLK'], 2)}"
+        f"\n•STL: {round(p1['post_season']['STL'] - p2['post_season']['STL'], 2)}"
+        f"\n•TOV: {round(p1['post_season']['TOV'] - p2['post_season']['TOV'], 2) * -1}"
+        f"\n\nREGULAR SEASON AVG:\n"
+        f"\n•PTS: {round(p1['reg_season']['PTS'] - p2['reg_season']['PTS'], 2)}"
+        f"\n•AST: {round(p1['reg_season']['AST'] - p2['reg_season']['AST'], 2)}"
+        f"\n•REB: {round(p1['reg_season']['REB'] - p2['reg_season']['REB'], 2)}"
+        f"\n•BLK: {round(p1['reg_season']['BLK'] - p2['reg_season']['BLK'], 2)}"
+        f"\n•STL: {round(p1['reg_season']['STL'] - p2['reg_season']['STL'], 2)}"
+        f"\n•TOV: {round(p1['reg_season']['TOV'] - p2['reg_season']['TOV'], 2) * -1}"
+        )
+ 
     
 @dp.message_handler()
 async def info_menu(message: types.Message, state: FSMContext):
@@ -76,7 +108,7 @@ async def info_menu(message: types.Message, state: FSMContext):
         f"\n•TOV: {total['reg_season']['TOV']}"
         )
     elif message.text == 'Regular seasson stats avg':
-        await bot.send_message(message.from_user.id, f"PLAY-OFFS AVG:\n"
+        await bot.send_message(message.from_user.id, f"REGULAR SEASON AVG:\n"
         f"\n•PTS: {avg['reg_season']['PTS']}"
         f"\n•AST: {avg['reg_season']['AST']}"
         f"\n•REB: {avg['reg_season']['REB']}"

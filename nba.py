@@ -14,9 +14,11 @@ stats_idx = {
 
 def find_player_by_name(name):
     player_dict = players.get_players()
-    pl = [p for p in player_dict if p['full_name'].lower() == name.lower()][0]
-
-    return pl['id'] #Returns int
+    try:
+        pl = [p for p in player_dict if p['full_name'].lower() == name.lower()][0]
+        return pl['id']
+    except Exception:
+        return 0
 
 
 def get_player_stats(id):
@@ -70,31 +72,3 @@ def get_player_stats(id):
 
     return stats_total, stats_avg
 
-def compare_players(id1, id2):
-    p1_stats = get_player_stats(id1)[1]
-    p2_stats = get_player_stats(id2)[1]
-
-    stats = {
-        'post_season': {
-            'PTS' : round(p1_stats['post_season']['PTS'] - p2_stats['post_season']['PTS'], 2),
-            'AST' : round(p1_stats['post_season']['REB'] - p2_stats['post_season']['REB'], 2),
-            'REB' : round(p1_stats['post_season']['AST'] - p2_stats['post_season']['AST'], 2),
-            'BLK' : round(p1_stats['post_season']['BLK'] - p2_stats['post_season']['BLK'], 2),
-            'STL' : round(p1_stats['post_season']['STL'] - p2_stats['post_season']['STL'], 2),
-            'TOV' : round(p1_stats['post_season']['TOV'] - p2_stats['post_season']['TOV'], 2) * -1
-        }, 
-
-        'reg_season' : {
-            'PTS' : round(p1_stats['reg_season']['PTS'] - p2_stats['reg_season']['PTS'], 2),
-            'AST' : round(p1_stats['reg_season']['AST'] - p2_stats['reg_season']['AST'], 2),
-            'REB' : round(p1_stats['reg_season']['REB'] - p2_stats['reg_season']['REB'], 2),
-            'BLK' : round(p1_stats['reg_season']['BLK'] - p2_stats['reg_season']['BLK'], 2),
-            'STL' : round(p1_stats['reg_season']['STL'] - p2_stats['reg_season']['STL'], 2),
-            'TOV' : round(p1_stats['reg_season']['TOV'] - p2_stats['reg_season']['TOV'], 2) * -1
-        }
-
-    }
-
-    return stats
-
-#print(compare_players(find_player_by_name('LeBron James'), find_player_by_name('Michael Jordan')))
