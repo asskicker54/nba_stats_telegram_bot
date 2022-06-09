@@ -2,9 +2,9 @@ from operator import pos
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats
 
-player_dict = players.get_players()
-stats_idx = {
-    'TEAM': 2, 
+
+stats_idx = { 
+    'G' : 3,
     'PTS' : 23, 
     'AST' : 18,
     'REB' : 17,
@@ -14,17 +14,20 @@ stats_idx = {
 }
 
 def find_player_by_name(name):
-    pl = [p for p in player_dict if p['full_name'] == name][0]
+    player_dict = players.get_players()
+    pl = [p for p in player_dict if p['full_name'].lower() == name.lower()][0]
+
     return pl['id'] #Returns int
 
-def print_player_stats(id):
+
+def get_player_stats(id):
     player_info = playercareerstats.PlayerCareerStats(player_id=id)
     rs = player_info.career_totals_regular_season.get_dict()['data']
     ps = player_info.career_totals_post_season.get_dict()['data']
     
     stats = {
-        'post_season': {
-            'TEAM': ps[0][stats_idx['TEAM']], 
+        'post_season': { 
+            'G'   : ps[0][stats_idx['G']],
             'PTS' : ps[0][stats_idx['PTS']],
             'AST' : ps[0][stats_idx['AST']],
             'REB' : ps[0][stats_idx['REB']],
@@ -34,7 +37,7 @@ def print_player_stats(id):
         }, 
 
         'reg_season': {
-            'TEAM': rs[0][stats_idx['TEAM']], 
+            'G'   : rs[0][stats_idx['G']],
             'PTS' : rs[0][stats_idx['PTS']],
             'AST' : rs[0][stats_idx['AST']],
             'REB' : rs[0][stats_idx['REB']],
@@ -45,6 +48,5 @@ def print_player_stats(id):
 
     }
     return stats
-    
-print(print_player_stats(find_player_by_name('LeBron James')))
 
+#print(get_player_stats(find_player_by_name("Michael jordan")))
